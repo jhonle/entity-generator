@@ -12,11 +12,9 @@ import ReactFlow, {
 import { Sidebar } from "./sidebar";
 import { uuid } from "uuidv4";
 
-const initialEdges = [{ id: "e1-2", source: "1", target: "2" }];
-
 export default function DBGenerator() {
-  const [nodes, setNodes, onNodesChange] = useNodesState([]); //initialNodes
-  const [edges, setEdges, onEdgesChange] = useEdgesState([]); //initialEdges
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
   const onConnect = useCallback(
     (params: any) => setEdges((eds) => addEdge(params, eds)),
@@ -84,12 +82,15 @@ export default function DBGenerator() {
 
     setNodes(nodesUpdated);
   }
+
   return (
     <main className="flex flex-row h-screen">
       <aside className="basis-1/4">
         <Sidebar
           onAddTable={onAddTable}
           selected={selectedTable}
+          tables={nodes}
+          edges={edges}
           updateTable={onUpdateTable}
           addAttribute={onAddAttribute}
           onUpdateAttribute={onUpdateAttribute}

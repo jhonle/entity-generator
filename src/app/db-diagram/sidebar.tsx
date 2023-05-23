@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useMemo } from "react";
 
 export function Sidebar(props: any) {
   function onAddTable() {
@@ -13,9 +13,28 @@ export function Sidebar(props: any) {
   function onAddAtribute() {
     props.addAttribute();
   }
+
   function onUpdateAttribute(id: string, value: any) {
     props.onUpdateAttribute(id, value);
   }
+  const relations: any[] = useMemo(() => {
+    const id = props.selected?.data?.id;
+    const links = props.edges.filter(
+      (edge: any) => edge.source == id || edge.target.id == id
+    );
+
+    const data = links.map((link: any) => {
+      const source = props.tables.find((table: any) => table.id == link.source);
+      const target = props.tables.find((table: any) => table.id == link.target);
+      return {
+        source,
+        target,
+        id: link.id,
+      };
+    });
+
+    return data;
+  }, [props.selected, props.edges]);
 
   return (
     <div className="flex flex-col p-5 border-2 border-sky-400 rounded w-full h-full">
@@ -43,9 +62,10 @@ export function Sidebar(props: any) {
               value={props.selected.data.label}
               onChange={onUpdateLabel}
             />
-            <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            <br />
+            <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
               Attributes
-            </label>
+            </h5>
             <button
               type="button"
               className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
@@ -84,6 +104,40 @@ export function Sidebar(props: any) {
                     <option>Int</option>
                     <option>Boolean</option>
                   </select>
+                </div>
+              ))}
+
+            <br />
+            <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+              Relations
+            </h5>
+            <button
+              type="button"
+              className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+            >
+              +
+            </button>
+            {!!relations.length &&
+              relations.map((relation) => (
+                <div key={relation.id}>
+                  <form>
+                    <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                      Source
+                    </label>
+                    <input
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                      value={relation.source.data.label}
+                      onChange={() => {}}
+                    />
+                    <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                      Target
+                    </label>
+                    <input
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                      value={relation.target.data.label}
+                      onChange={() => {}}
+                    />
+                  </form>
                 </div>
               ))}
           </form>
