@@ -1,21 +1,21 @@
 "use client";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import "reactflow/dist/style.css";
 import ReactFlow, {
   useNodesState,
   useEdgesState,
   addEdge,
   Background,
-  Node,
 } from "reactflow";
 
 import { Sidebar } from "./sidebar";
+import { Generate } from "./generate";
 import { uuid } from "uuidv4";
 
 export default function DBGenerator() {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-
+  const [show, setShow] = useState(false);
   const onConnect = useCallback(
     (params: any) => setEdges((eds) => addEdge(params, eds)),
     [setEdges]
@@ -94,6 +94,9 @@ export default function DBGenerator() {
           updateTable={onUpdateTable}
           addAttribute={onAddAttribute}
           onUpdateAttribute={onUpdateAttribute}
+          onShow={() => {
+            setShow(true);
+          }}
         />
       </aside>
       <section className="basis-3/4">
@@ -109,6 +112,14 @@ export default function DBGenerator() {
           </ReactFlow>
         </div>
       </section>
+      <Generate
+        show={show}
+        nodes={nodes}
+        edges={edges}
+        onClose={() => {
+          setShow(false);
+        }}
+      />
     </main>
   );
 }
